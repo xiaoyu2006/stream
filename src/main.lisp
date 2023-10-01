@@ -3,7 +3,7 @@
   (:export #:force #:delay #:cached-delay
            #:stream-cons #:stream-car #:stream-cdr #:stream-cache-cons
            #:stream-null?
-           #:stream-ref #:stream-map #:stream-for-each #:stream-filter #:stream-reduce
+           #:stream-ref #:stream-first-n #:stream-map #:stream-for-each #:stream-filter #:stream-reduce
            #:stream-display #:stream-enum-interval #:stream->list #:list->stream))
 (in-package :stream)
 
@@ -27,11 +27,13 @@
   "Force the evaluation of DELAYED."
   `(funcall ,delayed))
 
-(defun stream-cons (a b)
-  (cons a (delay b)))
+(defmacro stream-cons (a b)
+  "Construct a new stream with head A and tail B."
+  `(cons ,a (delay ,b)))
 
-(defun stream-cache-cons (a b)
-  (cons a (cached-delay b)))
+(defmacro stream-cache-cons (a b)
+  "Construct a new stream with head A and tail B where B is cached."
+  `(cons ,a (cached-delay ,b)))
 
 (defun stream-car (s)
   (car s))
@@ -48,6 +50,12 @@
   (if (= n 0)
       (stream-car s)
       (stream-ref (stream-cdr s) (- n 1))))
+
+(defun stream-first-n (s n)
+  (if (or (= n 0) (stream-null? s))
+      '()
+      (stream-cons (stream-car s)
+                   (stream-first-n (stream-cdr s) (- n 1)))))
 
 (defun stream-map (proc s)
   (if (stream-null? s)

@@ -17,6 +17,13 @@
 
 ;; Use stream-reduce to multiply the numbers in the stream
 (stream-reduce #'* 1 s) ; Returns 120
+
+;; Infinite stream of fibonacci numbers
+(defun fib (a b)
+  (cons-stream a (fib b (+ a b))))
+(defparameter fibs (fib 0 1))
+;; Take the first 10 fibonacci numbers
+(stream-first-n fibs 10)
 ```
 
 ## Author

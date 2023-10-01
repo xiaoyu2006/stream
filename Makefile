@@ -11,4 +11,4 @@ test:
 	$(LISP) --eval "(push \"./\" asdf:*central-registry*)" \
 			--eval "(ql:quickload :stream)" \
 			--eval "(asdf:test-system :stream)" \
-			--eval "(quit)"
+			--non-interactive
