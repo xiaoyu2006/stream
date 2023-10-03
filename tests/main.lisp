@@ -10,6 +10,12 @@
       (ok (= (stream-reduce #'+ 0 s) 15))
       (ok (= (stream-reduce #'* 1 s) 120)))))
 
+(deftest test-stream-filter
+  (testing "stream-filter"
+    (let ((s (stream-enum-interval 1 5)))
+      (ok (equal (stream->list (stream-filter #'oddp s)) '(1 3 5)))
+      (ok (equal (stream->list (stream-filter #'evenp s)) '(2 4))))))
+
 (deftest test-stream-map
   (testing "stream-map"
     (let ((s (stream-enum-interval 1 5)))
@@ -17,12 +23,12 @@
       (ok (equal (stream->list (stream-map #'1- s)) '(0 1 2 3 4))))))
 
 (deftest test-infinite-stream
-  (testing "infinite fib sequence"
+  (testing "infinite fibonacci stream"
     (defun fibgen (a b)
       (stream-cons a (fibgen b (+ a b))))
     (let ((fibs (fibgen 0 1)))
       (ok (equal (stream->list (stream-first-n fibs 10)) '(0 1 1 2 3 5 8 13 21 34)))))
-  (testing "prime sieve infinite stream"
+  (testing "prime sieve"
     (defun divisible? (x y)
         (zerop (mod x y)))
     (defun sieve (s)
@@ -34,7 +40,7 @@
       (stream-cons n (stream-starting-from (1+ n))))
     (let ((primes (sieve (stream-starting-from 2))))
       (ok (equal (stream->list (stream-first-n primes 10)) '(2 3 5 7 11 13 17 19 23 29)))))
-  (testing "pi approximation infinite stream"
+  (testing "pi approximation + convergence acceleration"
     ;; Based on \pi / 4 = 1 - 1/3 + 1/5 - 1/7 + 1/9 - ...
     (defun stream-scale (s factor)
       (stream-map (lambda (x) (* x factor)) s))
